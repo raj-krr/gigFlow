@@ -1,17 +1,23 @@
-import { Request, Response } from "express";
+import { Request} from "express";
 import User from "../models/User.model";
 import generateToken from "../utils/generateToken";
 
-export const registerUser = async (req: Request, res: Response) => {
+export const registerUser = async (req: Request, res:any) => {
   try {
-    const { name, email, password } = req.body;
+    const body = req.body as {
+      name?: string;
+      email?: string;
+      password?: string;
+    };
+
+    const { name, email, password } = body;
 
     if (!name || !email || !password) {
       return res.status(400).json({
         message: "All fields are required"
       });
-      }
-      
+    }
+
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(409).json({
@@ -41,9 +47,14 @@ export const registerUser = async (req: Request, res: Response) => {
   }
 };
 
-export const loginUser = async (req: Request, res: Response) => {
+export const loginUser = async (req: Request, res: any) => {
   try {
-    const { email, password } = req.body;
+    const body = req.body as {
+      email?: string;
+      password?: string;
+    };
+
+    const { email, password } = body;
 
     if (!email || !password) {
       return res.status(400).json({
@@ -71,7 +82,7 @@ export const loginUser = async (req: Request, res: Response) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000 
+      maxAge: 7 * 24 * 60 * 60 * 1000
     });
 
     return res.status(200).json({

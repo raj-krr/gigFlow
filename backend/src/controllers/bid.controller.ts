@@ -1,12 +1,17 @@
-import { Response } from "express";
 import { AuthRequest } from "../types/AuthRequest";
 import Bid from "../models/Bid.model";
 import Gig from "../models/Gig.model";
 import mongoose from "mongoose";
 
-export const createBid = async (req: AuthRequest, res: Response) => {
+export const createBid = async (req: AuthRequest, res: any) => {
   try {
-    const { gigId, message, price } = req.body;
+    const body = req.body as {
+      gigId?: string;
+      message?: string;
+      price?: number;
+    };
+
+    const { gigId, message, price } = body;
 
     if (!gigId || !message || !price) {
       return res.status(400).json({ message: "All fields are required" });
@@ -21,7 +26,6 @@ export const createBid = async (req: AuthRequest, res: Response) => {
       return res.status(404).json({ message: "Gig not found" });
     }
 
-    // 🚫 Can't bid on own gig
     if (gig.ownerId.toString() === req.user.id.toString()) {
       return res.status(403).json({
         message: "You cannot bid on your own gig"
@@ -45,23 +49,22 @@ export const createBid = async (req: AuthRequest, res: Response) => {
   }
 };
 
-export const hireBid = async (req: AuthRequest, res: Response) => {
+export const hireBid = async (req: AuthRequest, res: any) => {
   const session = await mongoose.startSession();
   session.startTransaction();
 
   try {
-    const bidIdParam = req.params.bidId;
+    const { bidId } = req.params as { bidId: string };
 
-    // ✅ Type guard (THIS fixes the error)
-    if (!bidIdParam || Array.isArray(bidIdParam)) {
+    if (!bidId) {
       return res.status(400).json({ message: "Invalid bid ID" });
     }
-
-    const bidObjectId = new mongoose.Types.ObjectId(bidIdParam);
 
     if (!req.user?.id) {
       return res.status(401).json({ message: "Unauthorized" });
     }
+
+    const bidObjectId = new mongoose.Types.ObjectId(bidId);
 
     const bid = await Bid.findById(bidObjectId).session(session);
     if (!bid) {
@@ -73,7 +76,6 @@ export const hireBid = async (req: AuthRequest, res: Response) => {
       return res.status(404).json({ message: "Gig not found" });
     }
 
-    // 👮 Only gig owner can hire
     if (gig.ownerId.toString() !== req.user.id.toString()) {
       return res.status(403).json({
         message: "You are not allowed to hire for this gig"
@@ -86,24 +88,18 @@ export const hireBid = async (req: AuthRequest, res: Response) => {
       });
     }
 
-    // ✅ Hire selected bid
     await Bid.updateOne(
       { _id: bidObjectId },
       { status: "hired" },
       { session }
     );
 
-    // ✅ Reject all other bids
     await Bid.updateMany(
-      {
-        gigId: bid.gigId,
-        _id: { $ne: bidObjectId }
-      },
+      { gigId: bid.gigId, _id: { $ne: bidObjectId } },
       { status: "rejected" },
       { session }
     );
 
-    // ✅ Assign gig
     await Gig.updateOne(
       { _id: gig._id },
       { status: "assigned" },
@@ -124,35 +120,31 @@ export const hireBid = async (req: AuthRequest, res: Response) => {
   }
 };
 
-export const getBidsForGig = async (req: AuthRequest, res: Response) => {
+export const getBidsForGig = async (req: AuthRequest, res: any) => {
   try {
-    const gigIdParam = req.params.gigId;
+    const { gigId } = req.params as { gigId: string };
 
-    // ✅ Type guard
-    if (!gigIdParam || Array.isArray(gigIdParam)) {
+    if (!gigId) {
       return res.status(400).json({ message: "Invalid gig ID" });
     }
-
-    const gigObjectId = new mongoose.Types.ObjectId(gigIdParam);
 
     if (!req.user?.id) {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
-    // 🔍 Check gig exists
+    const gigObjectId = new mongoose.Types.ObjectId(gigId);
+
     const gig = await Gig.findById(gigObjectId);
     if (!gig) {
       return res.status(404).json({ message: "Gig not found" });
     }
 
-    // 👮 Owner-only access
     if (gig.ownerId.toString() !== req.user.id.toString()) {
       return res.status(403).json({
         message: "You are not allowed to view bids for this gig"
       });
     }
 
-    // 📥 Fetch bids
     const bids = await Bid.find({ gigId: gigObjectId })
       .populate("freelancerId", "name email")
       .sort({ createdAt: -1 });

@@ -1,10 +1,15 @@
-import { Request,Response } from "express";
 import Gig from "../models/Gig.model";
 import { AuthRequest } from "../types/AuthRequest";
 
-export const createGig = async (req: AuthRequest, res: Response) => {
+export const createGig = async (req: AuthRequest, res: any) => {
   try {
-    const { title, description, budget } = req.body;
+    const body = req.body as {
+      title?: string;
+      description?: string;
+      budget?: number;
+    };
+
+    const { title, description, budget } = body;
 
     if (!title || !description || !budget) {
       return res.status(400).json({ message: "All fields are required" });
@@ -31,13 +36,11 @@ export const createGig = async (req: AuthRequest, res: Response) => {
   }
 };
 
-export const getOpenGigs = async (req: Request, res: Response) => {
+export const getOpenGigs = async (req: any, res: any) => {
   try {
-    const search = (req as any).query?.search as string | undefined;
+    const { search } = req.query as { search?: string };
 
-    const query: any = {
-      status: "open"
-    };
+    const query: any = { status: "open" };
 
     if (search) {
       query.title = {
