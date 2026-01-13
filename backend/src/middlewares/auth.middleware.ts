@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import { AuthRequest } from "../types/AuthRequest";
 
 const protect = (req: AuthRequest, res: any, next: any) => {
-  const token = req.cookies?.token;
+  const token = (req as any).cookies?.token;
 
   if (!token) {
     return res.status(401).json({ message: "Not authorized" });

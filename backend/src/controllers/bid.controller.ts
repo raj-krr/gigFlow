@@ -54,7 +54,7 @@ export const hireBid = async (req: AuthRequest, res: any) => {
   session.startTransaction();
 
   try {
-    const { bidId } = req.params as { bidId: string };
+    const { bidId } = (req as any).params as { bidId: string };
 
     if (!bidId) {
       return res.status(400).json({ message: "Invalid bid ID" });
@@ -122,7 +122,7 @@ export const hireBid = async (req: AuthRequest, res: any) => {
 
 export const getBidsForGig = async (req: AuthRequest, res: any) => {
   try {
-    const { gigId } = req.params as { gigId: string };
+    const { gigId } = (req as any).params as { gigId: string };
 
     if (!gigId) {
       return res.status(400).json({ message: "Invalid gig ID" });

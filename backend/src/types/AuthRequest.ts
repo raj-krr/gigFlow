@@ -1,12 +1,6 @@
-import { Request } from "express-serve-static-core";
+import { Request } from "express";
 
-export interface AuthRequest
-  extends Request<
-    Record<string, string>, // params
-    any,                    // res body
-    any,                    // req body
-    any                     // query
-  > {
+export interface AuthRequest extends Request {
   user?: {
     id: string;
   };
