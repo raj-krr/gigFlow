@@ -8,7 +8,7 @@ interface JwtPayload {
 
 const protect = (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const token = req.cookies?.token;
+    const token = (req as any).cookies?.token;
 
     if (!token) {
       return res.status(401).json({ message: "Not authorized, no token" });
