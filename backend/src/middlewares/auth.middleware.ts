@@ -1,12 +1,7 @@
-import { Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { AuthRequest } from "../types/AuthRequest";
 
-interface JwtPayload {
-  userId: string;
-}
-
-const protect = (req: AuthRequest, res: Response, next: NextFunction) => {
+const protect = (req: AuthRequest, res: any, next: any) => {
   try {
     const token = (req as any).cookies?.token;
 
@@ -17,14 +12,12 @@ const protect = (req: AuthRequest, res: Response, next: NextFunction) => {
     const decoded = jwt.verify(
       token,
       process.env.JWT_SECRET as string
-    ) as JwtPayload;
+    ) as { userId: string };
 
-    req.user = {
-      id: decoded.userId as any
-    };
+    req.user = { id: decoded.userId };
 
     next();
-  } catch {
+  } catch (error) {
     return res.status(401).json({ message: "Not authorized, token failed" });
   }
 };
