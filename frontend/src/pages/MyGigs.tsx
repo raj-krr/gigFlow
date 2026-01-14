@@ -24,39 +24,41 @@ export default function MyGigs() {
     fetchGigs();
   }, []);
 
-  if (loading) {
-    return <p className="p-6">Loading...</p>;
-  }
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-white to-blue-100 py-10">
-      <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-8">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-blue-50 py-10">
+      <div className="max-w-6xl mx-auto px-6">
         {/* Header */}
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-800">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900">
             My Gigs
           </h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="text-gray-500 mt-1">
             Gigs you have created
           </p>
         </div>
 
-        {gigs.length === 0 && (
+        {loading && (
+          <p className="text-gray-500">Loading gigs...</p>
+        )}
+
+        {!loading && gigs.length === 0 && (
           <p className="text-gray-500">
             You haven’t created any gigs yet.
           </p>
         )}
 
-        <div className="space-y-4">
+        {/* SAME GRID AS OPEN GIGS */}
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {gigs.map((gig) => (
             <div
               key={gig._id}
               onClick={() => navigate(`/gigs/${gig._id}`)}
-              className="border rounded-lg p-5 cursor-pointer
-                hover:shadow-md transition bg-white"
+              className="bg-white rounded-xl border p-6 cursor-pointer
+                hover:shadow-lg hover:-translate-y-1 transition-all"
             >
-              <div className="flex justify-between items-start">
-                <h2 className="text-lg font-semibold text-gray-800">
+              {/* Top */}
+              <div className="flex justify-between items-start mb-2">
+                <h2 className="text-lg font-semibold text-gray-900">
                   {gig.title}
                 </h2>
 
@@ -71,17 +73,20 @@ export default function MyGigs() {
                 </span>
               </div>
 
-              <p className="text-sm text-gray-600 mt-2 line-clamp-2">
+              {/* Description */}
+              <p className="text-sm text-gray-600 line-clamp-2">
                 {gig.description}
               </p>
 
-              <p className="text-sm font-medium mt-3">
-                Budget: ₹{gig.budget}
-              </p>
-
-              <p className="text-xs text-indigo-600 mt-3">
-                Click to view details →
-              </p>
+              {/* Footer */}
+              <div className="mt-6 flex justify-between items-center">
+                <p className="font-semibold text-gray-900">
+                  ₹{gig.budget}
+                </p>
+                <span className="text-sm text-indigo-600 font-medium">
+                  View details →
+                </span>
+              </div>
             </div>
           ))}
         </div>

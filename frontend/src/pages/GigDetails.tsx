@@ -143,27 +143,18 @@ export default function GigDetails() {
   if (error) return <p className="p-6 text-red-500">{error}</p>;
   if (!gig) return <p className="p-6">Gig not found</p>;
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-white to-blue-100 py-10">
-      <div className="max-w-3xl mx-auto bg-white rounded-xl shadow-lg p-8">
-        {/* Header */}
-        <div className="flex items-center gap-3 mb-3">
+return (
+  <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-white to-blue-100 py-10">
+    <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-lg p-8">
+      {/* ===== GIG HEADER ===== */}
+      <div className="mb-6">
+        <div className="flex items-center justify-between mb-2">
           <h1 className="text-3xl font-bold text-gray-800">
             {gig.title}
           </h1>
-          {isOwner && (
-            <span className="text-xs bg-gray-200 px-2 py-1 rounded">
-              Your Gig
-            </span>
-          )}
-        </div>
 
-        <p className="text-gray-600 mb-4">{gig.description}</p>
-
-        <div className="flex justify-between items-center mb-4">
-          <p className="font-medium">Budget: ₹{gig.budget}</p>
           <span
-            className={`text-xs px-3 py-1 rounded-full ${
+            className={`text-xs px-3 py-1 rounded-full font-medium ${
               gig.status === "open"
                 ? "bg-green-100 text-green-700"
                 : "bg-gray-200 text-gray-700"
@@ -173,81 +164,129 @@ export default function GigDetails() {
           </span>
         </div>
 
-        {/* ✅ SUCCESS MESSAGE */}
-        {successMessage && (
-          <div className="mb-6 bg-green-50 border border-green-200 p-4 rounded-lg text-green-700 text-sm">
-            {successMessage}
-          </div>
-        )}
+        <p className="text-gray-600 leading-relaxed">
+          {gig.description}
+        </p>
 
-        {/* ---------- BID FORM ---------- */}
-        {canBid && (
-          <div className="border rounded-lg p-5 bg-gray-50 mb-8">
-            <h2 className="text-lg font-semibold mb-3">
-              Place a Bid
-            </h2>
+        <div className="mt-4 flex items-center gap-6 text-sm">
+          <p className="font-medium">
+            Budget: <span className="text-gray-800">₹{gig.budget}</span>
+          </p>
 
-            {bidError && (
-              <p className="text-red-500 text-sm mb-3">
-                {bidError}
-              </p>
-            )}
+          {isOwner && (
+            <span className="text-xs bg-gray-100 px-2 py-1 rounded">
+              You posted this gig
+            </span>
+          )}
+        </div>
+      </div>
 
-            <form onSubmit={handleBidSubmit} className="space-y-4">
-              <textarea
-                className="w-full border rounded-lg px-3 py-2 text-sm"
-                placeholder="Explain how you will complete this work"
-                rows={3}
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-              />
+      {/* ===== SUCCESS MESSAGE ===== */}
+      {successMessage && (
+        <div className="mb-6 rounded-lg bg-green-50 border border-green-200 p-4 text-sm text-green-700">
+          {successMessage}
+        </div>
+      )}
 
-              <input
-                type="number"
-                className="w-full border rounded-lg px-3 py-2 text-sm"
-                placeholder="Your bid price (₹)"
-                value={price}
-                onChange={(e) =>
-                  setPrice(e.target.valueAsNumber || "")
-                }
-              />
+      {/* ===== BID FORM ===== */}
+      {canBid && (
+        <div className="border rounded-xl p-6 bg-gray-50 mb-8">
+          <h2 className="text-lg font-semibold text-gray-800 mb-1">
+            Place a Bid
+          </h2>
+          <p className="text-sm text-gray-500 mb-4">
+            Describe how you will complete this work and your expected price.
+          </p>
 
-              <button
-                disabled={submitting}
-                className="w-full bg-indigo-600 text-white py-2 rounded-lg
-                  hover:bg-indigo-700 disabled:opacity-50"
-              >
-                {submitting ? "Submitting..." : "Submit Bid"}
-              </button>
-            </form>
-          </div>
-        )}
+          {bidError && (
+            <p className="text-red-500 text-sm mb-3">
+              {bidError}
+            </p>
+          )}
 
-        {/* ---------- OWNER BID LIST ---------- */}
-        {isOwner && (
-          <div>
-            <h2 className="text-lg font-semibold mb-4">
-              Received Bids
-            </h2>
+          <form onSubmit={handleBidSubmit} className="space-y-4">
+            <textarea
+              placeholder="Explain your approach, timeline, and experience"
+              className="w-full border rounded-lg px-3 py-2 text-sm
+                focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              rows={4}
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+            />
 
-            {bidsLoading && <p>Loading bids...</p>}
+            <input
+              type="number"
+              placeholder="Your bid price (₹)"
+              className="w-full border rounded-lg px-3 py-2 text-sm
+                focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              value={price}
+              onChange={(e) =>
+                setPrice(e.target.valueAsNumber || "")
+              }
+            />
 
+            <button
+              disabled={submitting}
+              className="w-full bg-indigo-600 text-white py-2.5 rounded-lg
+                font-medium hover:bg-indigo-700 transition
+                disabled:opacity-50"
+            >
+              {submitting ? "Submitting..." : "Submit Bid"}
+            </button>
+          </form>
+        </div>
+      )}
+
+      {/* ===== OWNER BID LIST ===== */}
+      {isOwner && (
+        <div>
+          <h2 className="text-lg font-semibold mb-4">
+            Received Bids
+          </h2>
+
+          {bidsLoading && (
+            <p className="text-sm text-gray-500">
+              Loading bids...
+            </p>
+          )}
+
+          {!bidsLoading && bids.length === 0 && (
+            <p className="text-sm text-gray-500">
+              No bids received yet
+            </p>
+          )}
+
+          <div className="space-y-4">
             {bids.map((bid) => (
               <div
                 key={bid._id}
-                className="border rounded-lg p-4 bg-gray-50 mb-3"
+                className="border rounded-xl p-4 bg-gray-50"
               >
-                <div className="flex justify-between">
+                <div className="flex justify-between items-center mb-1">
                   <p className="font-medium">
                     {bid.freelancerId.name}
                   </p>
-                  <span className="text-xs px-2 py-1 rounded-full bg-gray-200">
+
+                  <span
+                    className={`text-xs px-2 py-1 rounded-full ${
+                      bid.status === "pending"
+                        ? "bg-yellow-100 text-yellow-700"
+                        : bid.status === "hired"
+                        ? "bg-green-100 text-green-700"
+                        : "bg-red-100 text-red-700"
+                    }`}
+                  >
                     {bid.status}
                   </span>
                 </div>
 
-                <p className="text-sm mt-2">{bid.message}</p>
-                <p className="font-medium mt-2">₹{bid.price}</p>
+                <p className="text-sm text-gray-600">
+                  {bid.message}
+                </p>
+
+                <p className="font-medium mt-2">
+                  ₹{bid.price}
+                </p>
 
                 {gig.status === "open" &&
                   bid.status === "pending" && (
@@ -255,7 +294,8 @@ export default function GigDetails() {
                       onClick={() => handleHire(bid._id)}
                       disabled={actionLoading === bid._id}
                       className="mt-3 px-4 py-1.5 bg-indigo-600 text-white
-                        rounded hover:bg-indigo-700 disabled:opacity-50"
+                        rounded-lg text-sm hover:bg-indigo-700
+                        disabled:opacity-50"
                     >
                       {actionLoading === bid._id
                         ? "Hiring..."
@@ -265,8 +305,10 @@ export default function GigDetails() {
               </div>
             ))}
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
-  );
+  </div>
+);
+
 }

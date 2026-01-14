@@ -76,11 +76,12 @@ export const loginUser = async (req: Request, res: any) => {
     }
 
     const token = generateToken(user._id.toString());
+const isProd = process.env.NODE_ENV === "production";
 
-    res.cookie("token", token, {
+res.cookie("token", token, {
   httpOnly: true,
-  secure: process.env.NODE_ENV === "production",
-  sameSite: "none",
+  secure: isProd,                    
+  sameSite: isProd ? "none" : "lax", 
 });
 
 

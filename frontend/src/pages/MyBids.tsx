@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 type Bid = {
   _id: string;
   price: number;
+  message: string;
   status: "pending" | "hired" | "rejected";
   gigId: {
     _id: string;
@@ -26,41 +27,40 @@ export default function MyBids() {
     fetchBids();
   }, []);
 
-  if (loading) {
-    return <p className="p-6">Loading...</p>;
-  }
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-white to-blue-100 py-10">
-      <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-8">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-blue-50 py-10">
+      <div className="max-w-6xl mx-auto px-6">
         {/* Header */}
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-800">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900">
             My Bids
           </h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="text-gray-500 mt-1">
             Gigs you have applied to
           </p>
         </div>
 
-        {bids.length === 0 && (
+        {loading && <p className="text-gray-500">Loading bids...</p>}
+
+        {!loading && bids.length === 0 && (
           <p className="text-gray-500">
             You haven’t placed any bids yet.
           </p>
         )}
 
-        <div className="space-y-4">
+        {/* SAME GRID AS GIGS */}
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {bids.map((bid) => {
             if (!bid.gigId) {
               return (
                 <div
                   key={bid._id}
-                  className="border rounded-lg p-4 bg-gray-50 text-gray-500"
+                  className="bg-white rounded-xl border p-6 text-gray-500"
                 >
-                  <p className="font-medium">
+                  <h2 className="font-semibold">
                     Gig no longer available
-                  </p>
-                  <p className="text-sm mt-1">
+                  </h2>
+                  <p className="mt-3 font-medium">
                     Your bid: ₹{bid.price}
                   </p>
                 </div>
@@ -73,11 +73,12 @@ export default function MyBids() {
               <div
                 key={bid._id}
                 onClick={() => navigate(`/gigs/${gig._id}`)}
-                className="border rounded-lg p-5 cursor-pointer
-                  hover:shadow-md transition bg-white"
+                className="bg-white rounded-xl border p-6 cursor-pointer
+                  hover:shadow-lg hover:-translate-y-1 transition-all"
               >
-                <div className="flex justify-between items-start">
-                  <h2 className="text-lg font-semibold text-gray-800">
+                {/* Top */}
+                <div className="flex justify-between items-start mb-2">
+                  <h2 className="text-lg font-semibold text-gray-900">
                     {gig.title}
                   </h2>
 
@@ -94,13 +95,20 @@ export default function MyBids() {
                   </span>
                 </div>
 
-                <p className="text-sm text-gray-600 mt-2">
-                  Your bid: <span className="font-medium">₹{bid.price}</span>
+                {/* YOUR PROPOSAL (replaces description) */}
+                <p className="text-sm text-gray-600 line-clamp-3">
+                  {bid.message}
                 </p>
 
-                <p className="text-xs text-indigo-600 mt-3">
-                  Click to view gig →
-                </p>
+                {/* Footer */}
+                <div className="mt-6 flex justify-between items-center">
+                  <p className="font-semibold text-gray-900">
+                    Your bid: ₹{bid.price}
+                  </p>
+                  <span className="text-sm text-indigo-600 font-medium">
+                    View gig →
+                  </span>
+                </div>
               </div>
             );
           })}
