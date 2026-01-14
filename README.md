@@ -101,8 +101,8 @@ npm run dev
 
 ## 🌐 Live Demo
 
-- 🔗 **Frontend (Vercel):** [ADD VERCEL LINK]
-- 🔗 **Backend (Render / Railway):** [ADD RENDER / RAILWAY LINK]
+- 🔗 **Frontend (Vercel):** https://gig-flow-chi-nine.vercel.app
+- 🔗 **Backend (Render / Railway):** https://gigflow-ieja.onrender.com
 
 ---
 
