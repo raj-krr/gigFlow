@@ -8,15 +8,15 @@ import bidRoutes from "./routes/bid.routes";
 
 const app = express();
 
-app.use(express.json());
-app.use(cookieParser());
-
 app.use(
   cors({
-    origin: "http://localhost:5173",
-    credentials: true
+    origin: process.env.CLIENT_URL,
+    credentials: true,
   })
 );
+
+app.use(express.json());
+app.use(cookieParser());
 
 //  Routes
 app.use("/api/auth", authRoutes);

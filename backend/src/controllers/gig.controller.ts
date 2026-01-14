@@ -59,3 +59,24 @@ export const getOpenGigs = async (req: any, res: any) => {
     });
   }
 };
+
+export const getGigById = async (req: any, res: any) => {
+  try {
+    const { id } = req.params;
+
+    const gig = await Gig.findById(id);
+
+    if (!gig) {
+      return res.status(404).json({ message: "Gig not found" });
+    }
+
+    res.json(gig);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch gig" });
+  }
+};
+
+export const getMyGigs = async (req:any, res:any) => {
+  const gigs = await Gig.find({ ownerId: req.user.id }).sort({ createdAt: -1 });
+  res.json(gigs);
+};

@@ -120,40 +120,47 @@ export const hireBid = async (req: AuthRequest, res: any) => {
   }
 };
 
-export const getBidsForGig = async (req: AuthRequest, res: any) => {
+
+export const getBidsForGig = async (req:any, res: any) => {
   try {
-    const { gigId } = (req as any).params as { gigId: string };
+    const { gigId } = req.params;
 
-    if (!gigId) {
-      return res.status(400).json({ message: "Invalid gig ID" });
+    console.log("gigId:", gigId);
+    console.log("user:", req.user);
+
+    if (!req.user) {
+      return res.status(401).json({ message: "Not authenticated" });
     }
 
-    if (!req.user?.id) {
-      return res.status(401).json({ message: "Unauthorized" });
-    }
-
-    const gigObjectId = new mongoose.Types.ObjectId(gigId);
-
-    const gig = await Gig.findById(gigObjectId);
+    const gig = await Gig.findById(gigId);
     if (!gig) {
       return res.status(404).json({ message: "Gig not found" });
     }
 
     if (gig.ownerId.toString() !== req.user.id.toString()) {
-      return res.status(403).json({
-        message: "You are not allowed to view bids for this gig"
-      });
+      return res.status(403).json({ message: "Not authorized" });
     }
 
-    const bids = await Bid.find({ gigId: gigObjectId })
+    const bids = await Bid.find({ gigId })
       .populate("freelancerId", "name email")
       .sort({ createdAt: -1 });
 
-    return res.status(200).json(bids);
+    res.json(bids);
   } catch (error) {
-    console.error("Get bids error:", error);
-    return res.status(500).json({
-      message: "Failed to fetch bids"
+    console.error("GET BIDS ERROR 👉", error);
+    res.status(500).json({
+      message: "Failed to fetch bids",
+      err: error,
     });
   }
 };
+
+export const getMyBids = async (req:any, res:any) => {
+  const bids = await Bid.find({ freelancerId: req.user.id })
+    .populate("gigId")
+    .sort({ createdAt: -1 });
+
+  res.json(bids);
+};
+
+

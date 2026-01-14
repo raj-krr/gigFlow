@@ -1,4 +1,3 @@
-import { Request} from "express";
 import User from "../models/User.model";
 import generateToken from "../utils/generateToken";
 
@@ -79,11 +78,11 @@ export const loginUser = async (req: Request, res: any) => {
     const token = generateToken(user._id.toString());
 
     res.cookie("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000
-    });
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: "none",
+});
+
 
     return res.status(200).json({
       message: "Login successful",
@@ -99,4 +98,13 @@ export const loginUser = async (req: Request, res: any) => {
       message: "Internal server error"
     });
   }
+};
+
+export const logout = (req:any, res: any) => {
+  res.cookie("token", "", {
+    httpOnly: true,
+    expires: new Date(0),
+  });
+
+  res.status(200).json({ message: "Logged out successfully" });
 };
