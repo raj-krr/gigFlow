@@ -78,6 +78,22 @@ The project focuses on **secure authentication**, **role-less user flow**, and *
 
 ---
 
+## 🔑 Environment Variables
+
+Create `.env` files using the examples below.
+
+### Backend
+```env
+PORT=5000
+NODE_ENV=development
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret_key
+CLIENT_URL=http://localhost:5173
+```
+### Frontend
+```env
+VITE_API_URL=http://localhost:5000
+```
 ## ▶️ Running the Project
 
 ### Backend
@@ -95,14 +111,14 @@ npm run dev
 ## 🎥 Demo Video
 
 📽️ **Loom Walkthrough**  
-👉 [ADD YOUR LOOM LINK HERE]
+👉 https://www.loom.com/share/6ce230ee56004575ac569eef2f3b2433
 
 ---
 
 ## 🌐 Live Demo
 
 - 🔗 **Frontend (Vercel):** https://gig-flow-chi-nine.vercel.app
-- 🔗 **Backend (Render / Railway):** https://gigflow-ieja.onrender.com
+- 🔗 **Backend (Render):** https://gigflow-ieja.onrender.com
 
 ---
 
